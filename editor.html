@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Soạn bài + Duyệt nội dung – Cổng truyền thông số</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --teal-600:#0E7C66; --teal-700:#0B6A57; --teal-50:#E6F4F1; --teal-100:#D9F2EA;
+      --amber-500:#FFB703; --blue-500:#3B82F6; --pink-500:#FF006E;
+      --green-500:#22C55E; --red-500:#E63946; --orange-500:#F59E0B;
+      --bg:#F8FAFC; --card:#FFFFFF; --text:#0F172A; --text-2:#475569; --border:#E2E8F0;
+      --shadow:0 2px 8px rgba(15,23,42,.08);
+      --radius:12px; --radius-lg:16px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans',sans-serif;background:var(--bg);color:var(--text)}
+    .app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+    .sidebar{background:var(--teal-600);color:#fff;display:flex;flex-direction:column}
+    .brand{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.12)}
+    .brand-logo{width:36px;height:36px;border-radius:10px;background:#fff;display:grid;place-items:center;color:var(--teal-600);font-weight:700}
+    .nav{padding:.5rem}
+    .nav a{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;border-radius:10px;color:#E6FFFA;text-decoration:none}
+    .nav a:hover,.nav a.active{background:rgba(255,255,255,.12)}
+    .spacer{flex:1}
+    .user{display:flex;align-items:center;gap:.75rem;padding:1rem;border-top:1px solid rgba(255,255,255,.12)}
+    .avatar{width:36px;height:36px;border-radius:50%;background:#fff1;display:grid;place-items:center;font-weight:600}
+
+    .main{display:flex;flex-direction:column}
+    .topbar{position:sticky;top:0;background:#fff;box-shadow:var(--shadow);z-index:10}
+    .topbar-inner{display:flex;align-items:center;gap:1rem;padding:.75rem 1rem}
+    .crumbs{color:var(--text-2)}
+    .btn{border:1px solid var(--border);background:#fff;border-radius:10px;padding:.55rem .9rem;cursor:pointer}
+    .btn.primary{background:var(--teal-600);color:#fff;border-color:var(--teal-600)}
+    .btn.primary:hover{background:var(--teal-700)}
+    .btn.danger{background:var(--red-500);color:#fff;border-color:var(--red-500)}
+    .btn.ghost{background:transparent}
+
+    .content{display:grid;grid-template-columns:1fr 360px;gap:1rem;padding:1rem}
+
+    .editor-wrap{display:grid;grid-template-rows:auto auto 1fr auto;gap:.75rem}
+    .toolbar{display:flex;flex-wrap:wrap;gap:.5rem;border:1px solid var(--border);background:#fff;border-radius:12px;padding:.5rem}
+    .tool{border:1px solid var(--border);background:#fff;border-radius:10px;padding:.4rem .6rem;cursor:pointer}
+    .title-input{
+      font-family:'Inter',sans-serif;
+      font-size:28px; font-weight:800; line-height:1.3;
+      border:none; outline:none; background:transparent; padding:0; margin:0; width:100%; color:var(--text)
+    }
+    .title-input:focus{box-shadow:0 0 0 3px var(--teal-50)}
+    .editor{border:1px solid var(--border);background:#fff;border-radius:12px;min-height:420px;padding:1rem;line-height:1.7;font-family:'Inter',sans-serif}
+    .editor h2{margin:1.2rem 0 .5rem}
+    .editor p{margin:.75rem 0;color:#1f2937}
+    .embed{border:1px dashed var(--border);border-radius:12px;padding:12px;background:#fff}
+
+    .approval{display:flex;gap:.5rem;justify-content:flex-end}
+
+    .side{display:grid;gap:1rem}
+    .card{background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:1rem}
+    .card h3{margin:.2rem 0 1rem 0;font-size:1rem}
+    .row{display:grid;gap:.4rem;margin-bottom:.75rem}
+    .label{font-size:.85rem;color:var(--text-2)}
+    .input, select, textarea{width:100%;border:1px solid var(--border);border-radius:10px;padding:.55rem .7rem;font:inherit}
+    .tag{display:inline-flex;align-items:center;gap:.25rem;background:var(--teal-100);color:#064E3B;border-radius:999px;padding:.25rem .5rem;font-size:.85rem}
+
+    /* Tag được chọn */
+    .tag.active{
+      background:var(--teal-600);
+      color:#fff;
+    }
+
+    /* Drawer styles */
+    .drawer{position:fixed;right:16px;bottom:16px;width:360px;max-width:95vw;background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);display:grid;grid-template-rows:auto 1fr auto;overflow:hidden;transition:all .25s ease;}
+    .drawer.expanded{width:640px;height:80vh;}
+    .drawer.collapsed{height:52px;overflow:hidden;}
+    .drawer header{padding:.75rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .drawer .items{padding:.75rem;display:grid;gap:.75rem;max-height:40vh;overflow:auto}
+    .comment{display:grid;gap:.25rem;border:1px solid var(--border);border-radius:12px;padding:.5rem}
+    .comment .meta{font-size:.8rem;color:var(--text-2)}
+    .drawer footer{padding:.5rem;border-top:1px solid var(--border);display:flex;gap:.5rem}
+
+    @media (max-width: 1100px){
+      .app{grid-template-columns:72px 1fr}
+      .nav a span,.user .meta,.brand span{display:none}
+      .content{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-logo">✍️</div><span><strong>Café Media Portal</strong></span></div>
+      <nav class="nav">
+        <a href="/index.html" class="nav-link">📊 <span>Dashboard</span></a>
+        <a href="/editor.html" class="nav-link">📝 <span>Nội dung</span></a>
+        <a href="/schedule.html" class="nav-link">📅 <span>Lịch xuất bản</span></a>
+        <a href="/livestream.html" class="nav-link">🎥 <span>Livestream</span></a>
+        <a href="/campaign.html" class="nav-link">📢 <span>Chiến dịch</span></a>
+        <a href="/seo.html" class="nav-link">⚙️ <span>SEO & Hiệu năng</span></a>
+        <a href="/profile.html" class="nav-link">👤 <span>Người dùng</span></a>
+      </nav>
+
+      <div class="spacer"></div>
+      <div class="user">
+        <div class="meta">
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-inner">
+          <div class="crumbs">Soạn bài</div>
+          <div style="margin-left:auto;display:flex;gap:.5rem">
+            <button class="btn ghost" id="btn-preview">Xem trước</button>
+            <button class="btn" id="btn-draft">Lưu nháp</button>
+            <button class="btn primary" id="btn-submit-top">Gửi duyệt</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <!-- Editor + Approval bar -->
+        <section class="editor-wrap">
+          <input class="title-input" id="title-input" placeholder="Tiêu đề bài viết"/>
+
+          <div class="toolbar" role="toolbar" aria-label="Soạn thảo">
+            <button class="tool" data-action="h1">H1</button>
+            <button class="tool" data-action="h2">H2</button>
+            <button class="tool" data-action="bold">B</button>
+            <button class="tool" data-action="italic">I</button>
+            <button class="tool" data-action="list">Danh sách</button>
+            <button class="tool" data-action="quote">Trích dẫn</button>
+            <button class="tool" data-action="link">Liên kết</button>
+            <button class="tool" data-action="image">Ảnh</button>
+            <button class="tool" data-action="video">Video</button>
+            <button class="tool" data-action="embed">Embed</button>
+          </div>
+
+          <article class="editor" id="editor" contenteditable="true" aria-label="Nội dung">
+            <h2>1. Hạt cà phê và tỉ lệ pha</h2>
+            <p>Chọn hạt rang vừa, xay mịn vừa. Tỉ lệ gợi ý 1:15 (cà phê:nước) cho hương vị cân bằng.</p>
+            <h2>2. Công thức cold brew cơ bản</h2>
+            <p>Ủ lạnh 12–18 giờ, lọc kỹ, thêm sữa hoặc syrup theo khẩu vị.</p>
+            <div class="embed" aria-label="YouTube embed">
+              ▶️ Nhúng YouTube: https://youtube.com/watch?v=dQw4w9WgXcQ
+            </div>
+            <h2>3. Ảnh minh họa</h2>
+            <p>[Ảnh] Ly cà phê mùa đông, bọt sữa mịn, topping quế.</p>
+          </article>
+
+          <div class="approval">
+            <button class="btn" id="btn-submit-bottom">Gửi duyệt</button>
+            <button class="btn primary" id="btn-schedule">Lên lịch</button>
+          </div>
+        </section>
+
+        <!-- Side meta -->
+        <aside class="side">
+          <div class="card">
+            <h3>Thuộc tính</h3>
+            <div class="row">
+              <label class="label">Chuyên mục</label>
+              <select>
+                <option>Công thức</option>
+                <option>Tin tức</option>
+                <option>Ưu đãi</option>
+              </select>
+            </div>
+            <div class="row">
+              <label class="label">Thẻ (Tags)</label>
+              <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+                <span class="tag">#CàPhêMùaĐông</span>
+                <span class="tag">#ƯuĐãiGiángSinh</span>
+                <span class="tag">#ComboSáng</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <!-- Drawer -->
+  <aside class="drawer" aria-label="Bình luận nội bộ">
+    <header>
+      <strong>Bình luận nội bộ</strong>
+      <div style="display:flex;gap:.5rem">
+        <button class="btn" id="toggleSizeBtn">🔍 Phóng to</button>
+        <button class="btn" id="collapseBtn">🔽 Thu gọn</button>
+      </div>
+    </header>
+    <div class="items">
+      <div class="comment">
+        <div class="meta"><strong>@Trần Chi</strong> • 13:58 • đoạn “cold brew”</div>
+        <div>Thêm ảnh minh hoạ và ghi thời gian ủ: 16h là hợp lý.</div>
+      </div>
+      <div class="comment">
+        <div class="meta"><strong>@Ngọc Linh</strong> • 13:40 • tiêu đề</div>
+        <div>SEO title ok. Thêm từ khoá “công thức cà phê mùa đông”.</div>
+      </div>
+    </div>
+    <footer>
+      <input class="input" id="comment-input" placeholder="Viết bình luận @mention …"/>
+      <button class="btn primary" id="comment-send">Gửi</button>
+    </footer>
+  </aside>
+
+  <!-- Script -->
+  <script>
+    const drawer = document.querySelector('.drawer');
+    const toggleSizeBtn = document.getElementById('toggleSizeBtn');
+    const collapseBtn = document.getElementById('collapseBtn');
+
+    toggleSizeBtn.addEventListener('click', () => {
+      drawer.classList.toggle('expanded');
+      const isExpanded = drawer.classList.contains('expanded');
+      toggleSizeBtn.textContent = isExpanded ? '🗗 Thu nhỏ' : '🔍 Phóng to';
+    });
+
+    collapseBtn.addEventListener('click', () => {
+      drawer.classList.toggle('collapsed');
+      const isCollapsed = drawer.classList.contains('collapsed');
+      collapseBtn.textContent = isCollapsed ? '🔼 Mở rộng' : '🔽 Thu gọn';
+    });
+  </script>
+
+  <script type="module" src="/src/editor.js"></script>
+  <script>
+    const path = window.location.pathname;
+
+    document.querySelectorAll('.nav a').forEach(link => {
+      const href = link.getAttribute('href');
+
+      const isHome = (path === "/" || path === "/index.html") && href === "/index.html";
+      const isMatch = href === path;
+
+      if (isHome || isMatch) {
+        link.classList.add("active");
+      }
+    });
+  </script>
+
+</body>
+</html>

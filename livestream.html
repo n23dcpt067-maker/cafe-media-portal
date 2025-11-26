@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Livestream – Cổng truyền thông số</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --teal-600:#0E7C66; --teal-700:#0B6A57; --teal-50:#E6F4F1;
+      --amber-500:#FFB703; --blue-500:#3B82F6; --red-500:#E63946; --pink-500:#FF006E;
+      --bg:#F8FAFC; --card:#FFFFFF; --border:#E2E8F0; --text:#0F172A; --text-2:#475569;
+      --shadow:0 2px 8px rgba(15,23,42,.08);
+      --radius:12px; --radius-lg:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans',sans-serif;background:var(--bg);color:var(--text)}
+    a{color:inherit;text-decoration:none}
+    /* Layout */
+    .app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+    .sidebar{background:var(--teal-600);color:#fff;display:flex;flex-direction:column}
+    .brand{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.12)}
+    .brand-logo{width:36px;height:36px;border-radius:10px;background:#fff;display:grid;place-items:center;color:var(--teal-600);font-weight:700}
+    .nav{padding:.5rem}
+    .nav a{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;border-radius:10px;color:#E6FFFA;text-decoration:none}
+    .nav a:hover,.nav a.active{background:rgba(255,255,255,.12)}
+    .spacer{flex:1}
+    .user{display:flex;align-items:center;gap:.75rem;padding:1rem;border-top:1px solid rgba(255,255,255,.12)}
+    .avatar{width:36px;height:36px;border-radius:50%;background:#fff1;display:grid;place-items:center;font-weight:600}
+    .main{display:flex;flex-direction:column}
+    .topbar{position:sticky;top:0;background:#fff;box-shadow:var(--shadow);z-index:10}
+    .topbar-inner{display:flex;align-items:center;gap:1rem;padding:.75rem 1rem}
+    .crumbs{color:var(--text-2)}
+    .search{flex:1;display:flex;align-items:center;gap:.5rem;border:1px solid var(--border);border-radius:999px;padding:.5rem 1rem;background:#fff}
+    .btn-primary{background:var(--teal-600);color:#fff;border:none;border-radius:10px;padding:.6rem 1rem;font-weight:600;cursor:pointer}
+    .btn-primary:hover{background:var(--teal-700)}
+    .icon-btn{width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:#fff;display:grid;place-items:center;cursor:pointer}
+
+    .content{display:grid;grid-template-columns:1.7fr 1fr;gap:1rem;padding:1rem}
+
+    /* Left column: preview + controls */
+    .panel{background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .panel header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;border-bottom:1px solid var(--border)}
+    .panel header h3{margin:0;font-size:1rem}
+
+    .preview{
+      position:relative;
+      background:#0b172a;
+      aspect-ratio:16/9;
+      border-bottom:1px solid var(--border);
+      display:grid;
+      place-items:center;
+      color:#cbd5e1;
+      border-radius:12px 12px 0 0;
+      overflow:hidden;
+    }
+
+    /* VIDEO webcam */
+    .preview video{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      border-radius:12px 12px 0 0;
+      background:#020617;
+    }
+
+    .preview .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:40px 40px}
+    .preview .status{position:absolute;top:12px;left:12px;background:rgba(14,124,102,.9);color:#fff;border-radius:999px;padding:.25rem .6rem;font-weight:700;font-size:.85rem}
+    .preview .meta{position:absolute;bottom:12px;left:12px;background:rgba(255,255,255,.1);color:#fff;border-radius:8px;padding:.35rem .6rem;font-size:.9rem}
+
+    .controls{display:flex;flex-wrap:wrap;gap:.5rem;padding:.75rem 1rem}
+    .btn{border:1px solid var(--border);background:#fff;border-radius:10px;padding:.55rem .9rem;cursor:pointer;font-weight:600}
+    .btn.primary{background:var(--teal-600);color:#fff;border-color:var(--teal-600)}
+    .btn.danger{background:var(--red-500);border-color:var(--red-500);color:#fff}
+    .btn.ghost{background:transparent}
+
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding:0 1rem 1rem}
+    .field{display:grid;gap:.35rem}
+    .label{font-size:.85rem;color:var(--text-2)}
+    .input, select, textarea{width:100%;border:1px solid var(--border);border-radius:10px;padding:.55rem .7rem;font:inherit}
+
+    .targets{display:grid;gap:.5rem}
+    .target{display:grid;grid-template-columns:auto 1fr auto;gap:.5rem;align-items:center;border:1px solid var(--border);border-radius:10px;padding:.5rem}
+    .dot{width:10px;height:10px;border-radius:50%}
+
+    /* Right column: chat + guests + stats */
+    .stack{display:grid;gap:1rem}
+    .card{background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)}
+    .card header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;border-bottom:1px solid var(--border)}
+    .card header h3{margin:0;font-size:1rem}
+
+    .chat{display:grid;grid-template-rows:auto 1fr auto;min-height:420px}
+    .chat .list{padding:.75rem;display:grid;gap:.5rem;max-height:360px;overflow:auto}
+    .msg{display:grid;gap:.25rem;border:1px solid var(--border);border-radius:10px;padding:.5rem}
+    .msg .meta{font-size:.8rem;color:var(--text-2)}
+    .chat footer{padding:.5rem;border-top:1px solid var(--border);display:flex;gap:.5rem}
+
+    .guests{padding:.75rem;display:grid;gap:.5rem}
+    .guest{display:grid;grid-template-columns:auto 1fr auto;gap:.5rem;align-items:center;border:1px solid var(--border);border-radius:10px;padding:.5rem}
+    .avatar{width:36px;height:36px;border-radius:50%;background:#e2e8f0;display:grid;place-items:center;font-weight:700}
+
+    .stats{padding:1rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+    .kpi{border:1px solid var(--border);background:#fff;border-radius:12px;padding:.75rem}
+    .kpi .title{font-size:.85rem;color:var(--text-2)}
+    .kpi .value{font-size:1.4rem;font-weight:800}
+
+    @media(max-width:1200px){
+      .app{grid-template-columns:72px 1fr}
+      .nav a span,.brand span{display:none}
+      .content{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-logo">🎥</div><span><strong>Livestream</strong></span></div>
+      <nav class="nav">
+        <a href="/index.html" class="nav-link">📊 <span>Dashboard</span></a>
+        <a href="/editor.html" class="nav-link">📝 <span>Nội dung</span></a>
+        <a href="/schedule.html" class="nav-link">📅 <span>Lịch xuất bản</span></a>
+        <a href="/livestream.html" class="nav-link">🎥 <span>Livestream</span></a>
+        <a href="/campaign.html" class="nav-link">📢 <span>Chiến dịch</span></a>
+        <a href="/seo.html" class="nav-link">⚙️ <span>SEO & Hiệu năng</span></a>
+        <a href="/profile.html" class="nav-link">👤 <span>Người dùng</span></a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-inner">
+          <div class="crumbs">Livestream</div>
+        </div>
+      </div>
+
+      <section class="content">
+        <!-- LEFT: Preview & Controls -->
+        <div class="panel">
+          <header>
+            <h3>Phòng phát trực tiếp</h3>
+            <div style="display:flex;gap:.5rem">
+              <button class="btn">Kiểm tra kết nối</button>
+              <button class="btn">Ghi hình</button>
+              <button class="btn primary">Go Live</button>
+              <button class="btn danger">Kết thúc</button>
+            </div>
+          </header>
+          <div class="preview">
+            <!-- VIDEO webcam thật -->
+            <video id="liveVideo" autoplay playsinline muted></video>
+
+            <div class="grid"></div>
+            <div class="status">PREVIEW</div>
+            <div class="meta">Nguồn: Camera HD Pro • Mic: USB Mic • 1080p30 (demo)</div>
+            <div style="text-align:center;position:relative;z-index:1">
+              <div style="font-size:48px;opacity:.2">🎬</div>
+              <div style="opacity:.6">Xem trước nguồn video/âm thanh</div>
+            </div>
+          </div>
+          <div class="controls">
+            <button class="btn">🎙️ Mute mic</button>
+            <button class="btn">🎧 Monitor</button>
+            <button class="btn">🖥️ Share screen</button>
+            <button class="btn">🗔 Layout</button>
+            <button class="btn">↻ Refresh devices</button>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label class="label">Nguồn hình & tiếng</label>
+              <select class="input"><option>Camera: HD Pro C920</option><option>Camera: Integrated</option></select>
+              <select class="input"><option>Mic: USB Condenser</option><option>Mic: System default</option></select>
+            </div>
+            <div class="field">
+              <label class="label">Tiêu đề & mô tả</label>
+              <input class="input" placeholder="Livestream: Pha cà phê mùa đông"/>
+              <textarea class="input" rows="2" placeholder="Giới thiệu công thức cold brew & latte art..."></textarea>
+            </div>
+            <div class="field" style="grid-column:1/-1">
+              <label class="label">Đa kênh (Multistream Targets)</label>
+              <div class="targets">
+                <div class="target">
+                  <div class="dot" style="background:#1877F2"></div>
+                  <div><strong>Facebook Page</strong><div style="color:var(--text-2);font-size:.9rem">Kết nối thông qua RTMP</div></div>
+                  <button class="btn">Kết nối</button>
+                </div>
+                <div class="target">
+                  <div class="dot" style="background:#FF0000"></div>
+                  <div><strong>YouTube</strong><div style="color:var(--text-2);font-size:.9rem">Stream key: **********</div></div>
+                  <button class="btn" style="background:#E6F4F1;border-color:#CFEAE2">Đang bật</button>
+                </div>
+                <div class="target">
+                  <div class="dot" style="background:#000"></div>
+                  <div><strong>TikTok</strong><div style="color:var(--text-2);font-size:.9rem">Yêu cầu tài khoản live</div></div>
+                  <button class="btn">Kết nối</button>
+                </div>
+                <div class="target">
+                  <div class="dot" style="background:var(--teal-600)"></div>
+                  <div><strong>RTMP Tuỳ chỉnh</strong><div style="color:var(--text-2);font-size:.9rem">rtmp://live.example.com/app</div></div>
+                  <button class="btn">Chỉnh</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Chat + Guests + Stats -->
+        <div class="stack">
+          <div class="card chat">
+            <header><h3>Chat & Q&A (Realtime)</h3><button class="btn">Bật chậm</button></header>
+            <div class="list">
+              <div class="msg"><div class="meta"><strong>@An</strong> • YouTube • 09:01</div><div>Hạt dùng là Arabica hay Robusta ạ?</div></div>
+              <div class="msg"><div class="meta"><strong>@Chi</strong> • Facebook • 09:02</div><div>Âm thanh rõ lắm!</div></div>
+              <div class="msg"><div class="meta"><strong>@Linh</strong> • TikTok • 09:05</div><div>Anh chia sẻ tỉ lệ latte được không?</div></div>
+            </div>
+            <footer>
+              <input class="input" placeholder="Nhập tin nhắn / trả lời @mention"/>
+              <button class="btn primary">Gửi</button>
+            </footer>
+          </div>
+
+          <div class="card">
+            <header><h3>Khách mời</h3><button class="btn">Mời</button></header>
+            <div class="guests">
+              <div class="guest"><div class="avatar">MC</div><div><strong>Mai Chi</strong><div style="color:var(--text-2);font-size:.9rem">Role: Co-host • Screen</div></div><button class="btn">Remove</button></div>
+              <div class="guest"><div class="avatar">KA</div><div><strong>Khánh An</strong><div style="color:var(--text-2);font-size:.9rem">Role: Co-host • Screen</div></div><button class="btn">Remove</button></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <header><h3>Chỉ số trực tiếp</h3><button class="btn ghost">Làm mới</button></header>
+            <div class="stats">
+              <div class="kpi"><div class="title">Đang xem</div><div class="value">482</div></div>
+              <div class="kpi"><div class="title">Tương tác/phút</div><div class="value">76</div></div>
+              <div class="kpi"><div class="title">Độ trễ ước tính</div><div class="value">2.1s</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- JS -->
+  <script type="module" src="/src/live.js"></script>
+  <script>
+    const path = window.location.pathname;
+
+    document.querySelectorAll('.nav a').forEach(link => {
+      const href = link.getAttribute('href');
+
+      const isHome = (path === "/" || path === "/index.html") && href === "/index.html";
+      const isMatch = href === path;
+
+      if (isHome || isMatch) {
+        link.classList.add("active");
+      }
+    });
+  </script>
+</body>
+</html>

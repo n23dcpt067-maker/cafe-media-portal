@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard – Cổng truyền thông số chuỗi café</title>
+  <meta name="color-scheme" content="light" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      /* Colors */
+      --teal-600:#0E7C66; --teal-700:#0B6A57; --teal-50:#E6F4F1; --teal-100:#D9F2EA;
+      --amber-500:#FFB703; --amber-600:#F29F05;
+      --blue-500:#3B82F6; --pink-500:#FF006E;
+      --green-500:#22C55E; --red-500:#E63946; --orange-500:#F59E0B;
+      --bg:#F8FAFC; --card:#FFFFFF; --text:#0F172A; --text-2:#475569; --border:#E2E8F0;
+      --shadow:0 2px 8px rgba(15,23,42,.08);
+      --radius:12px; --radius-lg:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans',sans-serif;background:var(--bg);color:var(--text)}
+    a{color:inherit;text-decoration:none}
+    /* Layout */
+    .app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+    .sidebar{background:var(--teal-600);color:#fff;display:flex;flex-direction:column}
+    .brand{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.12)}
+    .brand-logo{width:36px;height:36px;border-radius:10px;background:#fff;display:grid;place-items:center;color:var(--teal-600);font-weight:700}
+    .nav{padding:.5rem}
+    .nav a{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;border-radius:10px;color:#E6FFFA;text-decoration:none}
+    .nav a:hover,.nav a.active{background:rgba(255,255,255,.12)}
+    .spacer{flex:1}
+    .user{display:flex;align-items:center;gap:.75rem;padding:1rem;border-top:1px solid rgba(255,255,255,.12)}
+    .avatar{width:36px;height:36px;border-radius:50%;background:#fff1;display:grid;place-items:center;font-weight:600}
+
+    .main{display:flex;flex-direction:column}
+    .topbar{position:sticky;top:0;background:#fff;box-shadow:var(--shadow);z-index:10}
+    .topbar-inner{display:flex;align-items:center;gap:1rem;padding:.75rem 1rem}
+    .search{flex:1;display:flex;align-items:center;gap:.5rem;border:1px solid var(--border);border-radius:999px;padding:.5rem 1rem;background:#fff}
+    .btn-primary{background:var(--teal-600);color:#fff;border:none;border-radius:10px;padding:.6rem 1rem;font-weight:600;cursor:pointer}
+    .btn-primary:hover{background:var(--teal-700)}
+    .icon-btn{width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:#fff;display:grid;place-items:center;cursor:pointer}
+
+    .content{padding:1rem;display:grid;gap:1rem}
+
+    /* KPI cards */
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:1rem}
+    .card:hover{border-color:var(--teal-600)}
+    .kpi{display:grid;grid-template-columns:auto 1fr;gap:.75rem;align-items:start}
+    .kpi-icon{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:#fff}
+    .kpi .title{color:var(--text-2);font-size:.9rem}
+    .kpi .value{font-size:1.75rem;font-weight:800}
+    .kpi .delta{color:var(--green-500);font-weight:600}
+
+    /* Charts & middle row */
+    .middle{display:grid;grid-template-columns:2fr 1fr;gap:1rem}
+    .chart{height:360px;display:flex;align-items:center;justify-content:center;position:relative}
+    .chart h3{position:absolute;top:12px;left:16px;margin:0;font-size:1rem}
+    .chart svg{max-width:100%;height:auto}
+    .legend{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.5rem}
+    .legend .dot{width:10px;height:10px;border-radius:50%}
+
+    /* Schedule */
+    .bottom{display:grid;grid-template-columns:2fr 1fr;gap:1rem}
+    .calendar{display:grid;gap:.5rem}
+    .calendar .header{display:flex;align-items:center;justify-content:space-between}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.5rem}
+    .day{border:1px solid var(--border);background:#fff;border-radius:10px;min-height:88px;padding:.5rem;display:flex;flex-direction:column;gap:.25rem}
+    .day .date{font-size:.85rem;color:var(--text-2)}
+    .badges{display:flex;gap:.25rem;margin-top:auto}
+    .badge{width:8px;height:8px;border-radius:50%}
+
+    /* Events list */
+    .events{display:grid;gap:.75rem}
+    .event{display:grid;grid-template-columns:24px 1fr;gap:.75rem;align-items:start;border:1px solid var(--border);background:#fff;border-radius:12px;padding:.75rem}
+    .event .time{font-size:.85rem;color:var(--text-2)}
+
+    /* Activity feed */
+    .activity{display:grid;gap:.5rem}
+    .activity-item{display:flex;gap:.5rem;align-items:center;color:var(--text-2)}
+
+    /* Responsive */
+    @media (max-width: 1200px){
+      .kpi-grid{grid-template-columns:repeat(2,1fr)}
+      .middle,.bottom{grid-template-columns:1fr}
+    }
+    @media (max-width: 900px){
+      .app{grid-template-columns:72px 1fr}
+      .brand span,.nav a span,.user .meta{display:none}
+      .nav a{justify-content:center}
+      .user{justify-content:center}
+    }
+    @media (max-width: 680px){
+      .content{padding:.75rem}
+      .kpi-grid{grid-template-columns:1fr}
+    }
+    /* Badge số nhỏ */
+.noti-btn {
+  position: relative;
+}
+
+.noti-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #EF4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 999px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+
+/* Popup thông báo */
+.noti-panel {
+  position: absolute;
+  top: 58px;
+  right: 16px;
+  width: 320px;
+  max-height: 400px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  display: none;
+  flex-direction: column;
+  padding: 0.5rem 0;
+  z-index: 999;
+}
+
+.noti-panel.show {
+  display: flex;
+}
+
+.noti-item {
+  padding: .75rem 1rem;
+  display: flex;
+  gap: .75rem;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: .9rem;
+  cursor: pointer;
+}
+
+.noti-item:hover {
+  background: var(--teal-50);
+}
+
+.noti-item:last-child {
+  border-bottom: none;
+}
+
+.noti-item-icon {
+  font-size: 20px;
+}
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo">☕</div>
+        <span><strong>Café Media Portal</strong></span>
+      </div>
+    <nav class="nav">
+  <a href="/index.html" class="nav-link">📊 <span>Dashboard</span></a>
+  <a href="/editor.html" class="nav-link">📝 <span>Nội dung</span></a>
+  <a href="/schedule.html" class="nav-link">📅 <span>Lịch xuất bản</span></a>
+  <a href="/livestream.html" class="nav-link">🎥 <span>Livestream</span></a>
+  <a href="/campaign.html" class="nav-link">📢 <span>Chiến dịch</span></a>
+  <a href="/seo.html" class="nav-link">⚙️ <span>SEO & Hiệu năng</span></a>
+  <a href="/profile.html" class="nav-link">👤 <span>Người dùng</span></a>
+</nav>
+
+      <div class="spacer"></div>
+      <div class="user">
+        <div class="meta"></div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="topbar-inner" style="position:relative">
+          <div class="search" role="search">
+            <span>🔍</span>
+            <input aria-label="Tìm kiếm" placeholder="Tìm bài viết, chiến dịch…" style="border:none;outline:none;flex:1;font-size:15px"/>
+          </div>
+          <button class="btn-primary" id="btn-create">+ Tạo mới</button>
+
+          <!-- Nút chuông có badge -->
+          <button class="icon-btn noti-btn" aria-label="Thông báo" id="btn-noti">
+            🔔
+            <span class="noti-badge">3</span>
+          </button>
+
+          <button class="icon-btn" aria-label="Tài khoản" id="btn-user">👤</button>
+
+          <!-- Popup thông báo -->
+          <div class="noti-panel" id="noti-panel">
+            <div class="noti-item">
+              <div class="noti-item-icon">📰</div>
+              <div>
+                <strong>Bài viết mới</strong> đã được duyệt – 5 phút trước
+              </div>
+            </div>
+            <div class="noti-item">
+              <div class="noti-item-icon">🎥</div>
+              <div>
+                Livestream “Giới thiệu sản phẩm mới” chuẩn bị diễn ra
+              </div>
+            </div>
+            <div class="noti-item">
+              <div class="noti-item-icon">📢</div>
+              <div>
+                Chiến dịch “Tháng 12 – Ấm áp” đạt 80% KPI
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="content" aria-labelledby="h-dashboard">
+        <h1 id="h-dashboard" style="margin:.25rem 0 0 0;font-size:24px">Tổng quan</h1>
+
+        <!-- KPI Cards -->
+        <section class="kpi-grid" aria-label="Chỉ số chính">
+          <article class="card kpi">
+            <div class="kpi-icon" style="background:var(--teal-600)">📰</div>
+            <div>
+              <div class="title">Bài viết xuất bản</div>
+              <div class="value">124</div>
+              <div class="delta">+12% so với tháng trước</div>
+            </div>
+          </article>
+          <article class="card kpi">
+            <div class="kpi-icon" style="background:var(--amber-500)">🎥</div>
+            <div>
+              <div class="title">Livestream đã thực hiện</div>
+              <div class="value">18</div>
+              <div class="delta" style="color:var(--blue-500)">3 chiến dịch đang hoạt động</div>
+            </div>
+          </article>
+          <article class="card kpi">
+            <div class="kpi-icon" style="background:var(--blue-500)">👁️</div>
+            <div>
+              <div class="title">Lượt xem tổng</div>
+              <div class="value">48.2K</div>
+              <div class="delta">+3.5% tuần qua</div>
+            </div>
+          </article>
+          <article class="card kpi">
+            <div class="kpi-icon" style="background:var(--green-500)">📈</div>
+            <div>
+              <div class="title">Hiệu suất SEO</div>
+              <div class="value">87/100</div>
+              <div class="delta">Core Web Vitals đạt chuẩn</div>
+            </div>
+          </article>
+        </section>
+
+        <!-- Middle: Charts -->
+        <section class="middle" aria-label="Phân tích">
+          <article class="card chart" aria-label="Biểu đồ hiệu suất 30 ngày">
+            <h3>Hiệu suất nội dung (30 ngày)</h3>
+            <!-- Simple SVG line chart (static demo) -->
+            <svg viewBox="0 0 600 260" role="img" aria-label="Biểu đồ đường">
+              <defs>
+                <linearGradient id="fill-teal" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="var(--teal-600)" stop-opacity=".25"/>
+                  <stop offset="100%" stop-color="var(--teal-600)" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <rect x="0" y="0" width="600" height="260" fill="#fff" rx="12" ry="12"/>
+              <!-- grid -->
+              <g stroke="#EEF2F7" stroke-width="1">
+                <line x1="40" y1="220" x2="560" y2="220"/>
+                <line x1="40" y1="180" x2="560" y2="180"/>
+                <line x1="40" y1="140" x2="560" y2="140"/>
+                <line x1="40" y1="100" x2="560" y2="100"/>
+                <line x1="40" y1="60"  x2="560" y2="60"/>
+              </g>
+              <!-- teal area -->
+              <path d="M40 220 L40 170 L100 150 L160 160 L220 120 L280 110 L340 140 L400 130 L460 100 L520 115 L560 110 L560 220 Z"
+                    fill="url(#fill-teal)"/>
+              <!-- teal line -->
+              <path d="M40 170 L100 150 L160 160 L220 120 L280 110 L340 140 L400 130 L460 100 L520 115 L560 110"
+                    fill="none" stroke="var(--teal-600)" stroke-width="3" stroke-linecap="round"/>
+              <!-- amber line -->
+              <path d="M40 200 L100 185 L160 190 L220 170 L280 160 L340 170 L400 165 L460 150 L520 160 L560 150"
+                    fill="none" stroke="var(--amber-500)" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+            <div class="legend" aria-hidden="true" style="position:absolute;bottom:12px;left:16px">
+              <span class="dot" style="background:var(--teal-600)"></span> Lượt xem
+              <span class="dot" style="background:var(--amber-500);margin-left:12px"></span> Tương tác
+            </div>
+          </article>
+
+          <article class="card chart" aria-label="Biểu đồ tỷ lệ kênh">
+            <h3>Tỷ lệ kênh xuất bản</h3>
+            <!-- Simple pie using SVG -->
+            <svg viewBox="0 0 260 260" role="img" aria-label="Biểu đồ tròn">
+              <circle cx="130" cy="130" r="90" fill="#F1F5F9"/>
+              <!-- slices: FB 35%, TikTok 25%, YT 20%, Web 20% -->
+              <g transform="translate(130,130)">
+                <!-- Web 20% (teal) from 0 to 72deg -->
+                <path d="M0 0 L90 0 A90 90 0 0 1 27.84 85.56 Z" fill="var(--teal-600)"/>
+                <!-- YT 20% (amber) 72 to 144deg -->
+                <path d="M0 0 L27.84 85.56 A90 90 0 0 1 -72 52.2 Z" fill="var(--amber-500)"/>
+                <!-- TikTok 25% (pink) 144 to 234deg -->
+                <path d="M0 0 L-72 52.2 A90 90 0 0 1 -52.2 -72 Z" fill="var(--pink-500)"/>
+                <!-- FB 35% (blue) 234 to 360deg -->
+                <path d="M0 0 L-52.2 -72 A90 90 0 0 1 90 0 Z" fill="var(--blue-500)"/>
+              </g>
+              <circle cx="130" cy="130" r="58" fill="#fff"/>
+            </svg>
+            <div class="legend" style="padding:0 16px 12px 16px">
+              <span class="dot" style="background:var(--blue-500)"></span> Facebook 35%
+              <span class="dot" style="background:var(--pink-500)"></span> TikTok 25%
+              <span class="dot" style="background:var(--amber-500)"></span> YouTube 20%
+              <span class="dot" style="background:var(--teal-600)"></span> Web 20%
+            </div>
+          </article>
+        </section>
+
+        <!-- Bottom: Schedule & Events -->
+        <section class="bottom" aria-label="Lịch xuất bản & sự kiện">
+          <article class="card calendar">
+            <div class="header">
+              <h3 style="margin:0">Lịch xuất bản – Tháng 12</h3>
+              <div style="display:flex;gap:.5rem">
+                <button class="icon-btn" aria-label="Tháng trước">◀</button>
+                <button class="icon-btn" aria-label="Tháng sau">▶</button>
+              </div>
+            </div>
+            <div class="cal-grid" role="grid" aria-label="Tháng 12">
+              <!-- chỉ để vài ngày demo -->
+              <div class="day"><div class="date">1</div><div class="badges"><span class="badge" style="background:var(--teal-600)"></span></div></div>
+              <div class="day"><div class="date">2</div></div>
+              <div class="day"><div class="date">3</div><div class="badges"><span class="badge" style="background:var(--blue-500)"></span><span class="badge" style="background:var(--amber-500)"></span></div></div>
+              <div class="day"><div class="date">4</div></div>
+              <div class="day"><div class="date">5</div><div class="badges"><span class="badge" style="background:var(--pink-500)"></span></div></div>
+            </div>
+          </article>
+
+          <aside class="events">
+            <div class="card" style="padding:1rem">
+              <h3 style="margin:0 0 .5rem 0">Sự kiện hôm nay</h3>
+              <div class="event">
+                <div>🎬</div>
+                <div>
+                  <div style="font-weight:700">Livestream “Giới thiệu sản phẩm mới”</div>
+                  <div class="time">09:00 • YouTube + TikTok</div>
+                </div>
+              </div>
+              <div class="event">
+                <div>📰</div>
+                <div>
+                  <div style="font-weight:700">Bài viết “5 công thức cà phê mùa đông”</div>
+                  <div class="time">10:00 • Web + Facebook</div>
+                </div>
+              </div>
+              <div class="event">
+                <div>📢</div>
+                <div>
+                  <div style="font-weight:700">Chiến dịch “Tháng 12 – Ấm áp”</div>
+                  <div class="time">Cả ngày • Theo dõi KPI</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="padding:1rem">
+              <h3 style="margin:0 0 .5rem 0">Hoạt động gần đây</h3>
+              <div class="activity">
+                <div class="activity-item">👤 <span><strong>Trần Chi</strong> đã duyệt bài “Ưu đãi Giáng sinh” – 09:15</span></div>
+                <div class="activity-item">☕ <span><strong>Khánh An</strong> lên lịch livestream “Cà phê sáng tạo” – 08:45</span></div>
+                <div class="activity-item">📢 <span><strong>Ngọc Linh</strong> tạo chiến dịch “Tháng 12 – Ấm áp” – Hôm qua</span></div>
+              </div>
+            </div>
+          </aside>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- VITE ENTRY -->
+  <script type="module" src="/src/main.js"></script>
+  <script>
+    // Giữ logic đánh dấu menu đang active
+    const path = window.location.pathname;
+    document.querySelectorAll('.nav a').forEach(link => {
+      const href = link.getAttribute('href');
+
+      const isHome = (path === "/" || path === "/index.html") && href === "/index.html";
+      const isMatch = href === path;
+
+      if (isHome || isMatch) {
+        link.classList.add("active");
+      }
+    });
+
+    // === Logic mở / đóng popup thông báo ===
+    const notiBtn = document.getElementById("btn-noti");
+    const notiPanel = document.getElementById("noti-panel");
+
+    if (notiBtn && notiPanel) {
+      notiBtn.addEventListener("click", (e) => {
+        e.stopPropagation(); // không cho lan ra ngoài
+        notiPanel.classList.toggle("show");
+      });
+
+      // Đóng khi bấm ra ngoài
+      document.addEventListener("click", (e) => {
+        if (!notiPanel.contains(e.target) && !notiBtn.contains(e.target)) {
+          notiPanel.classList.remove("show");
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

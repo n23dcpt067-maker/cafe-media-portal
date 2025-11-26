@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chiến dịch – Cổng truyền thông số</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --teal-600:#0E7C66; --teal-700:#0B6A57; --teal-50:#E6F4F1; --teal-100:#D9F2EA;
+      --amber-500:#FFB703; --blue-500:#3B82F6; --pink-500:#FF006E;
+      --green-500:#22C55E; --red-500:#E63946; --orange-500:#F59E0B;
+      --bg:#F8FAFC; --card:#FFFFFF; --text:#0F172A; --text-2:#475569; --border:#E2E8F0;
+      --shadow:0 2px 8px rgba(15,23,42,.08);
+      --radius:12px; --radius-lg:16px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans',sans-serif;background:var(--bg);color:var(--text)}
+    .app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+    .sidebar{background:var(--teal-600);color:#fff;display:flex;flex-direction:column}
+    .brand{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.12)}
+    .brand-logo{width:36px;height:36px;border-radius:10px;background:#fff;display:grid;place-items:center;color:var(--teal-600);font-weight:700}
+    .nav{padding:.5rem}
+    .nav a{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;border-radius:10px;color:#E6FFFA;text-decoration:none}
+    .nav a:hover,.nav a.active{background:rgba(255,255,255,.12)}
+    .spacer{flex:1}
+    .user{display:flex;align-items:center;gap:.75rem;padding:1rem;border-top:1px solid rgba(255,255,255,.12)}
+    .avatar{width:36px;height:36px;border-radius:50%;background:#fff1;display:grid;place-items:center;font-weight:600}
+
+    .main{display:flex;flex-direction:column}
+    .topbar{position:sticky;top:0;background:#fff;box-shadow:var(--shadow);z-index:10}
+    .topbar-inner{display:flex;align-items:center;gap:1rem;padding:.75rem 1rem}
+    .crumbs{color:var(--text-2)}
+
+    .workspace{display:grid;grid-template-columns:1fr 340px;gap:1rem;padding:1rem}
+    .card{background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:1rem}
+    .card h3{margin-top:0;font-size:1rem}
+
+    /* Campaign list */
+    .campaign-list{display:grid;gap:1rem}
+    .campaign{border:1px solid var(--border);border-radius:12px;padding:1rem;display:grid;gap:.5rem;background:#fff;transition:box-shadow .2s}
+    .campaign:hover{box-shadow:0 2px 12px rgba(15,23,42,.1)}
+    .campaign-header{display:flex;align-items:center;justify-content:space-between}
+    .campaign-header h4{margin:0}
+    .tags{display:flex;flex-wrap:wrap;gap:.4rem}
+    .tag{background:var(--teal-50);color:var(--teal-600);padding:.2rem .5rem;border-radius:8px;font-size:.8rem}
+
+    .metrics{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.5rem;color:var(--text-2);font-size:.9rem}
+    .progress{background:#E2E8F0;height:6px;border-radius:6px;overflow:hidden;margin-top:.3rem}
+    .progress span{display:block;height:6px;background:var(--teal-600)}
+
+    /* Right side: Create + Analytics */
+    .right{display:grid;gap:1rem;height:fit-content;position:sticky;top:72px}
+    .form-row{display:grid;gap:.4rem;margin-bottom:.75rem}
+    .input, select, textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:.55rem .7rem;font:inherit}
+    .btn{border:none;border-radius:8px;padding:.6rem 1rem;font-weight:600;cursor:pointer}
+    .btn.primary{background:var(--teal-600);color:#fff}
+
+    .chart{height:200px;display:flex;align-items:center;justify-content:center;position:relative}
+    @media(max-width:1200px){.workspace{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-logo">📢</div><span><strong>Chiến dịch</strong></span></div>
+  <nav class="nav">
+  <a href="/index.html" class="nav-link">📊 <span>Dashboard</span></a>
+  <a href="/editor.html" class="nav-link">📝 <span>Nội dung</span></a>
+  <a href="/schedule.html" class="nav-link">📅 <span>Lịch xuất bản</span></a>
+  <a href="/livestream.html" class="nav-link">🎥 <span>Livestream</span></a>
+  <a href="/campaign.html" class="nav-link">📢 <span>Chiến dịch</span></a>
+  <a href="/seo.html" class="nav-link">⚙️ <span>SEO & Hiệu năng</span></a>
+  <a href="/profile.html" class="nav-link">👤 <span>Người dùng</span></a>
+</nav>
+
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-inner">
+          <div class="crumbs">Chiến dịch</div>
+        </div>
+      </div>
+
+      <section class="workspace">
+        <div>
+          <div class="card">
+            <h3>Danh sách chiến dịch hiện tại</h3>
+            <div class="campaign-list">
+              <div class="campaign">
+                <div class="campaign-header">
+                  <h4>Noel 2025 – “Ấm cùng Cà phê”</h4>
+                  <div class="tags"><div class="tag">Đang chạy</div><div class="tag">Facebook</div><div class="tag">TikTok</div></div>
+                </div>
+                <p>Chiến dịch lan toả thương hiệu dịp Giáng sinh, kết hợp minigame và livestream hướng dẫn pha chế.</p>
+                <div class="metrics">
+                  <div>📅 01/12 – 25/12</div>
+                  <div>🎯 Mục tiêu: +25% tương tác</div>
+                  <div>👥 12.4K lượt tham gia</div>
+                </div>
+                <div class="progress"><span style="width:68%"></span></div>
+              </div>
+
+              <div class="campaign">
+                <div class="campaign-header">
+                  <h4>Tháng cà phê Việt</h4>
+                  <div class="tags"><div class="tag">Hoàn thành</div><div class="tag">YouTube</div><div class="tag">Website</div></div>
+                </div>
+                <p>Chuỗi video ngắn chia sẻ hành trình hạt cà phê từ nông trại đến ly cà phê hoàn hảo.</p>
+                <div class="metrics">
+                  <div>📅 01/10 – 31/10</div>
+                  <div>🎯 Mục tiêu: 100K lượt xem</div>
+                  <div>📈 Đạt: 112K</div>
+                </div>
+                <div class="progress"><span style="width:100%;background:var(--blue-500)"></span></div>
+              </div>
+
+              <div class="campaign">
+                <div class="campaign-header">
+                  <h4>Ra mắt Cold Brew mới</h4>
+                  <div class="tags"><div class="tag">Chuẩn bị</div><div class="tag">Instagram</div></div>
+                </div>
+                <p>Chiến dịch teaser sản phẩm mới, kết hợp video hậu trường và bài PR trên web.</p>
+                <div class="metrics">
+                  <div>📅 05/01 – 15/02</div>
+                  <div>🎯 Chuẩn bị nội dung</div>
+                </div>
+                <div class="progress"><span style="width:25%;background:var(--red-500)"></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="right">
+          <div class="card">
+            <h3>Tạo chiến dịch mới</h3>
+            <div class="form-row"><label>Tên chiến dịch</label><input class="input" placeholder="VD: Tết 2026 – Hương vị đoàn viên"/></div>
+            <div class="form-row"><label>Ngày bắt đầu</label><input type="date" class="input"/></div>
+            <div class="form-row"><label>Ngày kết thúc</label><input type="date" class="input"/></div>
+            <div class="form-row"><label>Kênh triển khai</label><select class="input"><option>Facebook</option><option>YouTube</option><option>TikTok</option><option>Website</option><option>Instagram</option></select></div>
+            <div class="form-row"><label>Mục tiêu</label><textarea rows="3" class="input" placeholder="VD: Tăng 30% lượt tương tác, 10K lượt xem livestream..."></textarea></div>
+            <button class="btn primary" style="width:100%">Tạo chiến dịch</button>
+          </div>
+
+          <div class="card">
+            <h3>Phân tích hiệu quả</h3>
+            <div class="chart">
+              <svg viewBox="0 0 320 200">
+                <rect x="0" y="0" width="320" height="200" fill="#fff" rx="12"/>
+                <line x1="40" y1="160" x2="280" y2="160" stroke="#E2E8F0" stroke-width="2"/>
+                <rect x="60" y="100" width="36" height="60" fill="#3B82F6" rx="4"/>
+                <rect x="120" y="60" width="36" height="100" fill="#0E7C66" rx="4"/>
+                <rect x="180" y="80" width="36" height="80" fill="#FF0000" rx="4"/>
+                <rect x="240" y="120" width="36" height="40" fill="#FFB703" rx="4"/>
+                <text x="78" y="180" font-size="12" text-anchor="middle">FB</text>
+                <text x="138" y="180" font-size="12" text-anchor="middle">YT</text>
+                <text x="198" y="180" font-size="12" text-anchor="middle">TT</text>
+                <text x="258" y="180" font-size="12" text-anchor="middle">IG</text>
+              </svg>
+            </div>
+            <p style="color:var(--text-2);font-size:.9rem">Tổng tương tác: <strong>240K</strong> • CTR trung bình: <strong>5.2%</strong></p>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </div>
+ <script type="module" src="/src/campaign.js"></script>
+  <script>
+  const path = window.location.pathname;
+
+  document.querySelectorAll('.nav a').forEach(link => {
+    const href = link.getAttribute('href');
+
+    const isHome = (path === "/" || path === "/index.html") && href === "/index.html";
+    const isMatch = href === path;
+
+    if (isHome || isMatch) {
+      link.classList.add("active");
+    }
+  });
+</script>
+
+</body>
+</html>

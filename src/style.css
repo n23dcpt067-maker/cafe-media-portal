@@ -1,0 +1,76 @@
+:root{
+.nav a:hover,.nav a.active{background:rgba(255,255,255,.12)}
+.spacer{flex:1}
+.user{display:flex;align-items:center;gap:.75rem;padding:1rem;border-top:1px solid rgba(255,255,255,.12)}
+.avatar{width:36px;height:36px;border-radius:50%;background:#fff1;display:grid;place-items:center;font-weight:600}
+
+
+.main{display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;background:#fff;box-shadow:var(--shadow);z-index:10}
+.topbar-inner{display:flex;align-items:center;gap:1rem;padding:.75rem 1rem}
+.search{flex:1;display:flex;align-items:center;gap:.5rem;border:1px solid var(--border);border-radius:999px;padding:.5rem 1rem;background:#fff}
+.btn-primary{background:var(--teal-600);color:#fff;border:none;border-radius:10px;padding:.6rem 1rem;font-weight:600;cursor:pointer}
+.btn-primary:hover{background:var(--teal-700)}
+.icon-btn{width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:#fff;display:grid;place-items:center;cursor:pointer}
+
+
+.content{padding:1rem;display:grid;gap:1rem}
+
+
+/* KPI cards */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:1rem}
+.card:hover{border-color:var(--teal-600)}
+.kpi{display:grid;grid-template-columns:auto 1fr;gap:.75rem;align-items:start}
+.kpi-icon{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:#fff}
+.kpi .title{color:var(--text-2);font-size:.9rem}
+.kpi .value{font-size:1.75rem;font-weight:800}
+.kpi .delta{color:var(--green-500);font-weight:600}
+
+
+/* Charts & middle row */
+.middle{display:grid;grid-template-columns:2fr 1fr;gap:1rem}
+.chart{height:360px;display:flex;align-items:center;justify-content:center;position:relative}
+.chart h3{position:absolute;top:12px;left:16px;margin:0;font-size:1rem}
+.chart svg{max-width:100%;height:auto}
+.legend{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.5rem}
+.legend .dot{width:10px;height:10px;border-radius:50%}
+
+
+/* Schedule */
+.bottom{display:grid;grid-template-columns:2fr 1fr;gap:1rem}
+.calendar{display:grid;gap:.5rem}
+.calendar .header{display:flex;align-items:center;justify-content:space-between}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.5rem}
+.day{border:1px solid var(--border);background:#fff;border-radius:10px;min-height:88px;padding:.5rem;display:flex;flex-direction:column;gap:.25rem}
+.day .date{font-size:.85rem;color:var(--text-2)}
+.badges{display:flex;gap:.25rem;margin-top:auto}
+.badge{width:8px;height:8px;border-radius:50%}
+
+
+/* Events list */
+.events{display:grid;gap:.75rem}
+.event{display:grid;grid-template-columns:24px 1fr;gap:.75rem;align-items:start;border:1px solid var(--border);background:#fff;border-radius:12px;padding:.75rem}
+.event .time{font-size:.85rem;color:var(--text-2)}
+
+
+/* Activity feed */
+.activity{display:grid;gap:.5rem}
+.activity-item{display:flex;gap:.5rem;align-items:center;color:var(--text-2)}
+
+
+/* Responsive */
+@media (max-width: 1200px){
+.kpi-grid{grid-template-columns:repeat(2,1fr)}
+.middle,.bottom{grid-template-columns:1fr}
+}
+@media (max-width: 900px){
+.app{grid-template-columns:72px 1fr}
+.brand span,.nav a span,.user .meta{display:none}
+.nav a{justify-content:center}
+.user{justify-content:center}
+}
+@media (max-width: 680px){
+.content{padding:.75rem}
+.kpi-grid{grid-template-columns:1fr}
+}

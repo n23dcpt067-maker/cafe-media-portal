@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Người dùng – Cổng truyền thông số</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --teal-600:#0E7C66; --teal-700:#0B6A57; --teal-50:#E6F4F1;
+      --amber-500:#FFB703; --blue-500:#3B82F6; --red-500:#E63946; --pink-500:#FF006E;
+      --bg:#F8FAFC; --card:#FFFFFF; --border:#E2E8F0; --text:#0F172A; --text-2:#475569;
+      --shadow:0 2px 8px rgba(15,23,42,.08);
+      --radius:12px; --radius-lg:16px;
+    }
+   *{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text)
+}
+a{color:inherit;text-decoration:none}
+
+/* Layout */
+.app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+.sidebar{background:var(--teal-600);color:#fff;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.12)}
+.brand-logo{width:36px;height:36px;border-radius:10px;background:#fff;display:grid;place-items:center;color:var(--teal-600);font-weight:700}
+.nav{padding:.5rem}
+.nav a{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;border-radius:10px;color:#E6FFFA;text-decoration:none}
+.nav a:hover,.nav a.active{background:rgba(255,255,255,.12)}
+.spacer{flex:1}
+.user{display:flex;align-items:center;gap:.75rem;padding:1rem;border-top:1px solid rgba(255,255,255,.12)}
+.avatar{width:36px;height:36px;border-radius:50%;background:#fff1;display:grid;place-items:center;font-weight:600}
+
+/* 🔼 Làm top bar trắng, cao hơn, giống dashboard */
+.main{display:flex;flex-direction:column}
+.topbar{
+  position:sticky;
+  top:0;
+  background:#fff;
+  z-index:10;
+  border-bottom:1px solid var(--border); /* giống trang SEO */
+  box-shadow:none;                       /* bỏ bóng cho phẳng */
+}
+.topbar-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  padding:0.55rem 1.75rem;  
+  min-height:auto;
+}
+.crumbs {
+  color: var(--text-2);   
+  font-size: 0.95rem;     
+  font-weight: 500;        
+  margin: 0;
+  padding-top: 2px;         
+  margin-left: -10px;
+}
+
+.search{flex:1;display:flex;align-items:center;gap:.5rem;border:1px solid var(--border);border-radius:999px;padding:.5rem 1rem;background:#fff}
+.btn-primary{background:var(--teal-600);color:#fff;border:none;border-radius:10px;padding:.6rem 1rem;font-weight:600;cursor:pointer}
+.btn-primary:hover{background:var(--teal-700)}
+.icon-btn{width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:#fff;display:grid;place-items:center;cursor:pointer}
+
+.main-inner{
+  padding:1.25rem 1.75rem 1.75rem;  /* left = 1.75rem trùng với topbar-inner */
+  display:grid;
+  gap:1rem;
+}
+
+.card{background:#fff;border-radius:12px;box-shadow:var(--shadow);border:1px solid var(--border);padding:1rem}
+.card h3{margin-top:0}
+
+.avatar-wrap{display:flex;flex-direction:column;align-items:center;gap:.75rem}
+.avatar{width:96px;height:96px;background:#F1F5F9;border-radius:999px;display:grid;place-items:center;font-size:2rem;color:var(--teal-700)}
+.avatar img{width:100%;height:100%;border-radius:999px;object-fit:cover}
+
+.btn{padding:.45rem .9rem;border-radius:10px;border:1px solid var(--border);cursor:pointer;font-weight:600}
+.btn.primary{background:var(--teal-600);border-color:var(--teal-600);color:#fff}
+.btn.danger{background:#fee2e2;border-color:#fca5a5;color:#b91c1c}
+.btn.full{width:100%}
+
+.input, select{padding:.55rem;border-radius:8px;border:1px solid var(--border);width:100%}
+
+.toggle{position:relative;width:46px;height:24px}
+.toggle input{opacity:0;position:absolute;inset:0}
+.toggle-track{position:absolute;inset:0;background:#CBD5E1;border-radius:999px}
+.toggle-thumb{position:absolute;width:20px;height:20px;border-radius:999px;background:#fff;top:2px;left:2px;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle input:checked + .toggle-track{background:var(--teal-600)}
+.toggle input:checked + .toggle-track .toggle-thumb{transform:translateX(22px)}
+
+.form-row{display:grid;gap:.25rem;margin-bottom:.75rem}
+label{font-size:.85rem;font-weight:600;color:var(--text-2)}
+
+.switch-row{display:flex;justify-content:space-between;align-items:center;margin:.75rem 0}
+
+.session-item{border:1px solid var(--border);padding:.6rem;border-radius:10px;display:flex;justify-content:space-between;align-items:center}
+.session-meta{font-size:.85rem;color:var(--text-2)}
+
+@media(max-width:900px){
+  .app{grid-template-columns:72px 1fr}
+  .nav span,.brand span{display:none}
+}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">👤</div><span><strong>Cổng nội dung số</strong></span>
+    </div>
+    <nav class="nav">
+  <a href="/index.html" class="nav-link">📊 <span>Dashboard</span></a>
+  <a href="/editor.html" class="nav-link">📝 <span>Nội dung</span></a>
+  <a href="/schedule.html" class="nav-link">📅 <span>Lịch xuất bản</span></a>
+  <a href="/livestream.html" class="nav-link">🎥 <span>Livestream</span></a>
+  <a href="/campaign.html" class="nav-link">📢 <span>Chiến dịch</span></a>
+  <a href="/seo.html" class="nav-link">⚙️ <span>SEO & Hiệu năng</span></a>
+  <a href="/profile.html" class="nav-link">👤 <span>Người dùng</span></a>
+</nav>
+
+  </aside>
+
+  <main class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+  <div class="topbar-inner">
+    <div class="crumbs">Người dùng / Cài đặt tài khoản</div>
+    <button class="btn danger" id="logoutTop">Đăng xuất</button>
+  </div>
+</div>
+
+    <div class="main-inner">
+
+      <!-- Hồ sơ -->
+      <section class="card">
+        <h3>Hồ sơ cá nhân</h3>
+        <div class="avatar-wrap">
+          <div class="avatar" id="avatarPreview"><span id="avatarInitial">A</span></div>
+          <label class="btn">
+            Chọn avatar
+            <input id="avatarInput" type="file" accept="image/*" style="display:none;">
+          </label>
+          <button id="removeAvatarBtn" class="btn">Xóa avatar</button>
+        </div>
+
+        <div class="form-row">
+          <label>Họ và tên</label>
+          <input class="input" id="fullNameInput" value="Admin"/>
+        </div>
+
+        <div class="form-row">
+          <label>Email</label>
+          <input class="input" type="email" id="emailInput" value="admin@domain.com"/>
+        </div>
+
+        <button class="btn primary full">Lưu thay đổi</button>
+      </section>
+
+      <!-- Cài đặt -->
+      <section class="card">
+        <h3>Cài đặt tài khoản</h3>
+
+        <div class="switch-row">
+          <div>Email thông báo</div>
+          <label class="toggle">
+            <input type="checkbox" checked>
+            <div class="toggle-track"><div class="toggle-thumb"></div></div>
+          </label>
+        </div>
+
+        <div class="switch-row">
+          <div>Hiển thị avatar</div>
+          <label class="toggle">
+            <input type="checkbox" checked>
+            <div class="toggle-track"><div class="toggle-thumb"></div></div>
+          </label>
+        </div>
+
+      </section>
+
+      <!-- Mật khẩu -->
+      <section class="card">
+        <h3>Đổi mật khẩu</h3>
+
+        <div class="form-row">
+          <label>Mật khẩu hiện tại</label>
+          <input type="password" class="input">
+        </div>
+
+        <div class="form-row">
+          <label>Mật khẩu mới</label>
+          <input type="password" class="input">
+        </div>
+
+        <div class="form-row">
+          <label>Nhập lại mật khẩu mới</label>
+          <input type="password" class="input">
+        </div>
+
+        <button class="btn full">Đổi mật khẩu</button>
+      </section>
+
+      <!-- Phiên đăng nhập -->
+      <section class="card">
+        <h3>Phiên đăng nhập</h3>
+
+        <div class="session-item">
+          <div>
+            <strong>Chrome – Máy hiện tại</strong>
+            <div class="session-meta">Hồ Chí Minh • Đang hoạt động</div>
+          </div>
+        </div>
+
+        <div class="session-item">
+          <div>
+            <strong>iPhone – Safari</strong>
+            <div class="session-meta">Lần cuối: hôm qua</div>
+          </div>
+          <button class="btn">Đăng xuất</button>
+        </div>
+
+        <button class="btn danger full" style="margin-top:.75rem;">Đăng xuất khỏi tất cả thiết bị</button>
+      </section>
+
+    </div>
+  </main>
+</div>
+<script type="module" src="/src/profile.js"></script>
+<script>
+  const path = window.location.pathname;
+
+  document.querySelectorAll('.nav a').forEach(link => {
+    const href = link.getAttribute('href');
+
+    const isHome = (path === "/" || path === "/index.html") && href === "/index.html";
+    const isMatch = href === path;
+
+    if (isHome || isMatch) {
+      link.classList.add("active");
+    }
+  });
+</script>
+
+</body>
+</html>

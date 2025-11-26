@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SEO & Hiệu năng – Cổng truyền thông số</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --teal-600:#0E7C66; --teal-700:#0B6A57; --teal-50:#E6F4F1;
+      --amber-500:#FFB703; --blue-500:#3B82F6; --red-500:#E63946; --pink-500:#FF006E;
+      --bg:#F8FAFC; --card:#FFFFFF; --border:#E2E8F0; --text:#0F172A; --text-2:#475569;
+      --shadow:0 2px 8px rgba(15,23,42,.08);
+      --radius:12px; --radius-lg:16px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text)}
+    .app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+    .sidebar{background:var(--teal-600);color:#fff;display:flex;flex-direction:column}
+    .brand{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.12)}
+    .brand-logo{width:36px;height:36px;border-radius:10px;background:#fff;display:grid;place-items:center;color:var(--teal-600);font-weight:700}
+    .nav{padding:.5rem}
+    .nav a{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;border-radius:10px;color:#E6FFFA;text-decoration:none}
+    .nav a:hover,.nav a.active{background:rgba(255,255,255,.12)}
+
+    .main{display:flex;flex-direction:column}
+    .topbar{position:sticky;top:0;background:#fff;box-shadow:var(--shadow);z-index:10}
+    .topbar-inner{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.75rem 1rem}
+    .crumbs{color:var(--text-2)}
+
+    .main-inner{padding:1rem;display:grid;gap:1rem}
+
+    /* KPIs */
+    .kpi-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:1rem;
+    }
+    .card{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      padding:1rem;
+    }
+    .card h3{margin:.1rem 0 .6rem;font-size:1rem}
+    .kpi-value{
+      font-size:1.6rem;
+      font-weight:700;
+      margin-bottom:.25rem;
+    }
+    .kpi-sub{
+      font-size:.9rem;
+      color:var(--text-2);
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:.25rem;
+      border-radius:999px;
+      padding:.15rem .55rem;
+      font-size:.8rem;
+      border:1px solid var(--border);
+      color:var(--text-2);
+      margin-top:.35rem;
+    }
+    .pill.positive{border-color:var(--teal-600);color:var(--teal-700);background:var(--teal-50);}
+    .pill.warning{border-color:#F59E0B;color:#92400E;background:#FEF3C7;}
+    .pill.danger{border-color:var(--red-500);color:#991B1B;background:#FEE2E2;}
+
+    /* Content layout */
+    .two-cols{
+      display:grid;
+      grid-template-columns:2.2fr 1.2fr;
+      gap:1rem;
+      align-items:flex-start;
+    }
+
+    /* Filter bar */
+    .toolbar{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:.5rem;
+      margin-bottom:.5rem;
+    }
+    .toolbar-title{
+      font-weight:600;
+      margin-right:.5rem;
+    }
+    .btn{
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:999px;
+      padding:.35rem .8rem;
+      font-weight:500;
+      cursor:pointer;
+      font-size:.85rem;
+    }
+    .btn.active{
+      background:var(--teal-600);
+      color:#fff;
+      border-color:var(--teal-600);
+    }
+    .input, select{
+      border:1px solid var(--border);
+      border-radius:8px;
+      padding:.45rem .6rem;
+      font:inherit;
+      min-width:140px;
+    }
+
+    /* Table */
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:.9rem;
+    }
+    thead{background:#F1F5F9;}
+    th,td{
+      padding:.5rem .55rem;
+      border-bottom:1px solid var(--border);
+      text-align:left;
+    }
+    th{
+      font-size:.8rem;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+      color:var(--text-2);
+    }
+    tbody tr:hover{
+      background:#F8FAFC;
+    }
+    .url{
+      font-size:.85rem;
+      color:var(--text-2);
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:42px;
+      border-radius:999px;
+      padding:.1rem .45rem;
+      font-size:.8rem;
+      font-weight:600;
+    }
+    .badge.good{
+      background:#DCFCE7;
+      color:#166534;
+    }
+    .badge.warn{
+      background:#FEF3C7;
+      color:#92400E;
+    }
+    .badge.bad{
+      background:#FEE2E2;
+      color:#B91C1C;
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      border-radius:999px;
+      border:1px solid var(--border);
+      padding:.15rem .45rem;
+      font-size:.75rem;
+      color:var(--text-2);
+      margin:.1rem .1rem .1rem 0;
+    }
+
+    /* Issue list */
+    .issue-list{display:grid;gap:.5rem;}
+    .issue-item{
+      border-radius:10px;
+      border:1px solid var(--border);
+      padding:.55rem .65rem;
+      display:flex;
+      flex-direction:column;
+      gap:.2rem;
+    }
+    .issue-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:.5rem;
+    }
+    .issue-title{font-weight:600;font-size:.9rem;}
+    .issue-count{
+      font-size:.8rem;
+      color:var(--text-2);
+    }
+    .issue-severity{
+      font-size:.8rem;
+      padding:.1rem .5rem;
+      border-radius:999px;
+      border:1px solid var(--border);
+    }
+    .issue-severity.high{background:#FEE2E2;color:#B91C1C;border-color:#FCA5A5;}
+    .issue-severity.medium{background:#FEF3C7;color:#92400E;border-color:#FBBF24;}
+    .issue-severity.low{background:#ECFDF5;color:#166534;border-color:#6EE7B7;}
+
+    .issue-desc{font-size:.85rem;color:var(--text-2);}
+    .issue-foot{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:.8rem;
+      color:var(--text-2);
+    }
+    .link-like{
+      color:var(--teal-700);
+      cursor:pointer;
+      text-decoration:underline;
+    }
+
+    @media(max-width:1200px){
+      .app{grid-template-columns:72px 1fr}
+      .nav a span,.brand span{display:none}
+      .two-cols{grid-template-columns:1fr;}
+    }
+    @media(max-width:768px){
+      .kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    }
+    @media(max-width:600px){
+      .kpi-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">📈</div>
+      <span><strong>Cổng nội dung số</strong></span>
+    </div>
+    <nav class="nav">
+  <a href="/index.html" class="nav-link">📊 <span>Dashboard</span></a>
+  <a href="/editor.html" class="nav-link">📝 <span>Nội dung</span></a>
+  <a href="/schedule.html" class="nav-link">📅 <span>Lịch xuất bản</span></a>
+  <a href="/livestream.html" class="nav-link">🎥 <span>Livestream</span></a>
+  <a href="/campaign.html" class="nav-link">📢 <span>Chiến dịch</span></a>
+  <a href="/seo.html" class="nav-link">⚙️ <span>SEO & Hiệu năng</span></a>
+  <a href="/profile.html" class="nav-link">👤 <span>Người dùng</span></a>
+</nav>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="crumbs">SEO & Hiệu năng</div>
+        <div style="display:flex;gap:.5rem;align-items:center;">
+          <select id="rangeSelect" class="input">
+            <option value="7">7 ngày qua</option>
+            <option value="30" selected>30 ngày qua</option>
+            <option value="90">90 ngày qua</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-inner">
+      <!-- KPIs -->
+      <section class="kpi-grid">
+        <div class="card">
+          <h3>Điểm SEO trung bình</h3>
+          <div class="kpi-value" id="kpiSeo">82</div>
+          <div class="kpi-sub">Trên tổng số trang đang theo dõi</div>
+          <div class="pill positive" id="kpiSeoTrend">▲ +6 điểm so với kỳ trước</div>
+        </div>
+
+        <div class="card">
+          <h3>Tốc độ tải trang (TTFB)</h3>
+          <div class="kpi-value" id="kpiSpeed">1.2s</div>
+          <div class="kpi-sub">Giá trị trung bình trên desktop & mobile</div>
+          <div class="pill warning" id="kpiSpeedTrend">▲ Cần tối ưu thêm trên mobile</div>
+        </div>
+
+        <div class="card">
+          <h3>Lỗi kỹ thuật</h3>
+          <div class="kpi-value" id="kpiIssues">12</div>
+          <div class="kpi-sub">Lỗi quan trọng cần xử lý</div>
+          <div class="pill danger" id="kpiIssuesTrend">⚠ Ưu tiên khắc phục trong tuần</div>
+        </div>
+
+        <div class="card">
+          <h3>Từ khóa Top 10</h3>
+          <div class="kpi-value" id="kpiKeywords">18</div>
+          <div class="kpi-sub">Số từ khóa đang nằm Top 10 Google</div>
+          <div class="pill positive" id="kpiKeywordsTrend">▲ +4 từ khóa mới</div>
+        </div>
+      </section>
+
+      <!-- Bảng chi tiết & Vấn đề -->
+      <section class="two-cols">
+        <!-- LEFT: bảng trang -->
+        <div class="card">
+          <div class="toolbar">
+            <span class="toolbar-title">Hiệu năng theo trang</span>
+            <button class="btn active" data-type="all">Tất cả</button>
+            <button class="btn" data-type="landing">Landing page</button>
+            <button class="btn" data-type="blog">Blog</button>
+            <button class="btn" data-type="other">Khác</button>
+            <div style="flex:1"></div>
+            <input id="searchInput" class="input" placeholder="Tìm theo tên trang hoặc URL"/>
+          </div>
+
+          <div style="overflow:auto;">
+            <table>
+              <thead>
+              <tr>
+                <th>Trang</th>
+                <th>SEO</th>
+                <th>Tốc độ</th>
+                <th>Vấn đề</th>
+                <th>Lần audit cuối</th>
+              </tr>
+              </thead>
+              <tbody id="pagesBody">
+              <!-- JS render -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- RIGHT: Vấn đề nổi bật -->
+        <div class="card">
+          <h3>Vấn đề nổi bật</h3>
+          <div class="issue-list" id="issueList">
+            <!-- JS render -->
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script>
+  // ===== Demo data =====
+  const pages = [
+    {
+      name: 'Trang chủ',
+      url: '/',
+      type: 'landing',
+      seo: 88,
+      speed: 1.1,
+      issues: ['Thiếu heading H2 chứa từ khoá'],
+      issuesCount: 1,
+      lastAudit: '2025-11-10'
+    },
+    {
+      name: 'Menu Noel 2025',
+      url: '/menu/noel-2025',
+      type: 'landing',
+      seo: 79,
+      speed: 1.5,
+      issues: ['Ảnh dung lượng lớn', 'Thiếu mô tả ALT cho hình ảnh'],
+      issuesCount: 2,
+      lastAudit: '2025-11-09'
+    },
+    {
+      name: 'Blog: 5 tips gọi món nhanh',
+      url: '/blog/5-tips-goi-mon-nhanh',
+      type: 'blog',
+      seo: 84,
+      speed: 1.3,
+      issues: ['Meta description hơi ngắn'],
+      issuesCount: 1,
+      lastAudit: '2025-11-08'
+    },
+    {
+      name: 'Landing: Đăng ký thành viên',
+      url: '/membership',
+      type: 'landing',
+      seo: 72,
+      speed: 2.0,
+      issues: ['Thời gian phản hồi server cao', 'Nhiều script chưa tối ưu'],
+      issuesCount: 2,
+      lastAudit: '2025-11-07'
+    },
+    {
+      name: 'Trang liên hệ',
+      url: '/contact',
+      type: 'other',
+      seo: 90,
+      speed: 1.0,
+      issues: [],
+      issuesCount: 0,
+      lastAudit: '2025-11-06'
+    }
+  ];
+
+  const issuesHighlight = [
+    {
+      title: 'Ảnh chưa nén / dung lượng lớn',
+      severity: 'high',
+      count: 5,
+      desc: 'Ảnh lớn làm tăng thời gian tải trang trên mobile, ảnh hưởng Core Web Vitals.',
+      tip: 'Nén ảnh xuống dưới 200KB, dùng định dạng WebP nơi có thể.'
+    },
+    {
+      title: 'Thiếu meta description',
+      severity: 'medium',
+      count: 3,
+      desc: 'Một số trang chưa có meta description tối ưu cho SEO.',
+      tip: 'Thêm đoạn mô tả 120–160 ký tự, có chứa từ khóa chính.'
+    },
+    {
+      title: 'Không có heading H1 duy nhất',
+      severity: 'low',
+      count: 2,
+      desc: 'Cấu trúc heading chưa rõ ràng trên một số bài blog.',
+      tip: 'Đảm bảo mỗi trang có đúng 1 thẻ H1, các thẻ H2/H3 phân cấp nội dung.'
+    }
+  ];
+
+  const pagesBody = document.getElementById('pagesBody');
+  const issueList = document.getElementById('issueList');
+  const searchInput = document.getElementById('searchInput');
+  const typeButtons = document.querySelectorAll('.toolbar .btn[data-type]');
+
+  let currentType = 'all';
+
+  function badgeClass(score){
+    if(score >= 85) return 'good';
+    if(score >= 70) return 'warn';
+    return 'bad';
+  }
+
+  function speedBadgeClass(sec){
+    if(sec <= 1.3) return 'good';
+    if(sec <= 1.8) return 'warn';
+    return 'bad';
+  }
+
+  function renderPages(){
+    const term = (searchInput.value || '').toLowerCase();
+    pagesBody.innerHTML = '';
+
+    pages
+      .filter(p => currentType === 'all' || p.type === currentType)
+      .filter(p => {
+        if(!term) return true;
+        return p.name.toLowerCase().includes(term) || p.url.toLowerCase().includes(term);
+      })
+      .forEach(page => {
+        const tr = document.createElement('tr');
+
+        const tdName = document.createElement('td');
+        tdName.innerHTML = `<div>${page.name}</div><div class="url">${page.url}</div>`;
+
+        const tdSeo = document.createElement('td');
+        tdSeo.innerHTML = `<span class="badge ${badgeClass(page.seo)}">${page.seo}</span>`;
+
+        const tdSpeed = document.createElement('td');
+        tdSpeed.innerHTML = `<span class="badge ${speedBadgeClass(page.speed)}">${page.speed.toFixed(1)}s</span>`;
+
+        const tdIssues = document.createElement('td');
+        if(page.issuesCount > 0){
+          tdIssues.innerHTML = page.issues.map(i => `<span class="chip">${i}</span>`).join('');
+        }else{
+          tdIssues.innerHTML = '<span style="font-size:.8rem;color:var(--text-2)">Không có vấn đề nổi bật</span>';
+        }
+
+        const tdAudit = document.createElement('td');
+        tdAudit.textContent = page.lastAudit;
+
+        tr.appendChild(tdName);
+        tr.appendChild(tdSeo);
+        tr.appendChild(tdSpeed);
+        tr.appendChild(tdIssues);
+        tr.appendChild(tdAudit);
+
+        pagesBody.appendChild(tr);
+      });
+
+    if(!pagesBody.innerHTML){
+      pagesBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-2);padding:1rem;">Không tìm thấy trang phù hợp.</td></tr>`;
+    }
+  }
+
+  function renderIssues(){
+    issueList.innerHTML = issuesHighlight.map(i => `
+      <div class="issue-item">
+        <div class="issue-header">
+          <div>
+            <div class="issue-title">${i.title}</div>
+            <div class="issue-count">${i.count} trang bị ảnh hưởng</div>
+          </div>
+          <div class="issue-severity ${i.severity}">
+            ${i.severity === 'high' ? 'Cao' : i.severity === 'medium' ? 'Trung bình' : 'Thấp'}
+          </div>
+        </div>
+        <div class="issue-desc">${i.desc}</div>
+        <div class="issue-foot">
+          <span>${i.tip}</span>
+          <span class="link-like">Xem danh sách trang</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Events
+  typeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      typeButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentType = btn.getAttribute('data-type');
+      renderPages();
+    });
+  });
+
+  searchInput.addEventListener('input', renderPages);
+
+  // init
+  renderPages();
+  renderIssues();
+</script>
+<script type="module" src="/src/seo.js"></script>
+<script>
+  const path = window.location.pathname;
+
+  document.querySelectorAll('.nav a').forEach(link => {
+    const href = link.getAttribute('href');
+
+    const isHome = (path === "/" || path === "/index.html") && href === "/index.html";
+    const isMatch = href === path;
+
+    if (isHome || isMatch) {
+      link.classList.add("active");
+    }
+  });
+</script>
+
+</body>
+</html>
